@@ -1,0 +1,12 @@
+spec:
+  template:
+    spec:
+      containers:
+        name: scylla-services
+        volumeMounts:
+          - name: nginx-sites
+            mountPath: /etc/nginx/sites-enabled
+      volumes:
+        - name: nginx-sites
+          configMap:
+            name: scylla-services-nginx-sites-config
