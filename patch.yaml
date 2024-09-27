@@ -3,6 +3,7 @@ spec:
     spec:
       containers:
         - name: scylla-services
+          image: 102771688444.dkr.ecr.us-west-1.amazonaws.com/onprem-unified:v2.28.30
           volumeMounts:
             - name: nginx-sites
               mountPath: /etc/nginx/sites-enabled
