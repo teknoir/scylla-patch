@@ -5,6 +5,6 @@
 # Add the configmap
 kubectl -n scylla apply -f https://raw.githubusercontent.com/teknoir/scylla-patch/main/configmap.yaml
 # Patch the deployment
-kubectl -n scylla patch deployment scylla-services --patch "$(curl -s https://raw.githubusercontent.com/teknoir/scylla-patch/main/patch.yaml)"
+kubectl -n scylla patch deployment scylla-services --type strategic --patch "$(curl -s https://raw.githubusercontent.com/teknoir/scylla-patch/main/patch.yaml)"
 ```
 

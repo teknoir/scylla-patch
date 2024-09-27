@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "6"
+    meta.helm.sh/release-name: scylla
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2024-07-15T11:52:14Z"
+  generation: 10
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    k8slens-edit-resource-version: v1
+  name: scylla-services
+  namespace: scylla
+  resourceVersion: "10251526"
+  uid: f9ef6959-2c60-49ff-b89a-1393697b1e98
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      engine: scylla-services
+      name: scylla-services
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2024-09-26T06:09:17Z"
+      creationTimestamp: null
+      labels:
+        engine: scylla-services
+        name: scylla-services
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: scylla-services
+          image: 102771688444.dkr.ecr.us-west-1.amazonaws.com/onprem-unified:v2.28.30
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /api/v1/ping
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 3
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: scylla-services
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 8090
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 1
+            httpGet:
+              path: /api/v1/ping
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 2
+            successThreshold: 5
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            privileged: true
+            runAsGroup: 0
+            runAsUser: 0
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/models-compiled/
+              name: cache
+            - mountPath: /etc/scylla
+              name: scylla-json
+              readOnly: true
+            - mountPath: /scylla
+              name: scylla-pvc
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: aws-registry-102771688444
+      nodeSelector:
+        engine: scylla
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: scylla-services
+      serviceAccountName: scylla-services
+      terminationGracePeriodSeconds: 5
+      volumes:
+        - hostPath:
+            path: /etc/models-compiled/
+            type: ""
+          name: cache
+        - configMap:
+            defaultMode: 420
+            name: scylla-json
+          name: scylla-json
+        - name: scylla-pvc
+          persistentVolumeClaim:
+            claimName: webservice-pvc
+status:
+  availableReplicas: 1
+  conditions:
+    - lastTransitionTime: "2024-07-15T11:52:14Z"
+      lastUpdateTime: "2024-09-26T06:09:47Z"
+      message: ReplicaSet "scylla-services-6646f6d599" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2024-09-27T05:48:15Z"
+      lastUpdateTime: "2024-09-27T05:48:15Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+  observedGeneration: 10
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
